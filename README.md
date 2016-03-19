@@ -1,5 +1,4 @@
 # TP Génie logiciel et qualité - Ascenseur
----------------------------------------------------
 
 Les exercices du TP s'insèrent dans le cadre plus général du développement d'un logiciel de simulation d'un système automatisé d'ascenseur.
 
