@@ -54,6 +54,7 @@ public class Demande {
 	public boolean enDescente() {
 		return this.sens == Sens.DESCENTE;
 	}
+	
 	/**
 	 * passer au etage suivant selon le sens de la demande
 	 * @throws ExceptionCabineArretee

@@ -1,5 +1,5 @@
 /**
- * Classes et interfaces de la partie commande de l'ascenseurr. 
+ * Classes et interfaces de la partie commande de l'ascenseur. 
  * @author Lucile Torres-Gerardin
  *
  */

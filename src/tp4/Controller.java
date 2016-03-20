@@ -1,7 +1,6 @@
 package tp4;
 
 import java.util.ArrayList;
-
 import commande.ListeTrieeCirculaireDeDemandes;
 import outils.Demande;
 import outils.Sens;
@@ -16,14 +15,16 @@ public class Controller implements IController {
 	private EtatController etatController;
 	ArrayList<Demande> indefini = new ArrayList<Demande>();
 	
+	/**
+	 * Retourne la liste des demandes indéfini
+	 * @return ArrayList<Demande>
+	 */
 	public ArrayList<Demande> getIndefini() {
 		return indefini;
 	}
 
 	/**
-	 * getEtatController() 
-	 * 
-	 * retourn l'etat du controller
+	 * Retourne l'etat du controller
 	 * @return EtatController
 	 */
 	public EtatController getEtatController() {
@@ -32,13 +33,14 @@ public class Controller implements IController {
 
 	/**
 	 * enum pour representer l'etat du controller
-	 * @author CHOUKRI
-	 *
 	 */
 	public enum EtatController {
-		// ATTENTE = INDEFINI
 		DESCENTE, MONTEE, ARRET_ETAGE, ARRET_IMMINENT, ARRET_IMMEDIAT, ATTENTE;
 
+		/**
+		 * Retourne si l'état ou se trouve le controlleur est un etat de mouvement de la cabine
+		 * @return Boolean
+		 */
 		public boolean isEnMouvement() {
 			return this == EtatController.DESCENTE || this == EtatController.MONTEE
 					|| this == EtatController.ARRET_IMMINENT;
@@ -46,8 +48,13 @@ public class Controller implements IController {
 	}
 
 	/**
-	 * Controller(ListeTrieeCirculaireDeDemandes)
-	 * constructeur de la classe contoller
+	 * Constructeur de la classe contoller
+	 * Initialise
+	 * <ul>
+	 * 	<li>liste avec notre liste en paramètre</li>
+	 * 	<li>position à 0</li>
+	 * 	<li>l'état de notre controlleur à ATTENTE</li>
+	 * <ul>
 	 * @param liste
 	 */
 	public Controller(ListeTrieeCirculaireDeDemandes liste) {
@@ -56,17 +63,15 @@ public class Controller implements IController {
 		etatController = EtatController.ATTENTE;
 	}
 
+	/**
+	 * Retourne la liste des demandes
+	 * @return ListeTrieeCirculaireDeDemandes
+	 */
 	public ListeTrieeCirculaireDeDemandes getListe() {
 		return liste;
 	}
 
-	public void setListe(ListeTrieeCirculaireDeDemandes liste) {
-		this.liste = liste;
-	}
-
 	/**
-	 * setIUG(IIUG)
-	 * 
 	 * Permet de donner un IUG au Controlleur
 	 */
 	public void setIUG(IIUG iug) {
@@ -74,14 +79,17 @@ public class Controller implements IController {
 	}
 
 	/**
-	 * setCabine(ICabine)
-	 * 
 	 * Permet de donner une Cabine au Controller
 	 */
 	public void setCabine(ICabine cabine) {
 		this.cabine = cabine;
 	}
 
+	/**
+	 * Retourne la demande sous sa forme initial, si elle était indéfini retourne la demande indéfini
+	 * @param Demande
+	 * @return Demande
+	 */
 	private Demande demandeInitiale(Demande d) {
 		if(indefini.contains(new Demande(d.etage(), Sens.INDEFINI))) {
 			return new Demande(d.etage(), Sens.INDEFINI);
@@ -90,9 +98,7 @@ public class Controller implements IController {
 	}
 
 	/**
-	 * demander(Demande)
-	 * 
-	 * executer une demande en fonction de l'etat du controller
+	 * Executer une demande en fonction de l'etat du controller
 	 */
 	public void demander(Demande d) { // cas bleus7
 		System.out.println("Appel " + d.toString());
@@ -112,6 +118,7 @@ public class Controller implements IController {
 			if (d.etage() == this.position) {
 				// ToDo (ex : ouverture des portes)
 			}
+			// cas 3 bleu
 			else if (Math.abs(d.etage() - this.position) == 1) {
 				iug.allumerBouton(demandeInitiale(d));
 				if (d.etage() - this.position > 0) {
@@ -131,14 +138,11 @@ public class Controller implements IController {
 			else if (d.etage() < this.position) {
 				iug.allumerBouton(demandeInitiale(d));
 				majEtat(EtatController.DESCENTE);
-			}
-
-			// cas 3 bleu
-			
+			}			
 			break;
 		case MONTEE:
 		case DESCENTE:
-			// MÃªme traitement pour l'etat Montee ou Descente en cas de demande
+			// Même traitement pour l'etat Montee ou Descente en cas de demande
 			// (pas de break entre les 2 cases)
 			// cas 6 bleu
 			liste.inserer(d);
@@ -146,7 +150,7 @@ public class Controller implements IController {
 			break;
 		case ARRET_IMMINENT:
 			// cas 10 bleu
-			// on stocke la demande s'il y a plus d'un etage d'ï¿½cart entre la
+			// on stocke la demande s'il y a plus d'un etage d'écart entre la
 			// position actuelle de la cabine, et l'etage de la demande,
 			// ou si le sens de la cabine l'eloigne de l'etage de la demande.
 			int absDeltaEtage = Math.abs(d.etage() - this.position);
@@ -170,13 +174,10 @@ public class Controller implements IController {
 	}
 
 	/**
-	 * signalerChangementDEtage()
-	 * 
-	 * signaler le changement d'etage et mit a jour la position
+	 * Signaler le changement d'etage et mit a jour la position
 	 */
 	public void signalerChangementDEtage() { // cas noirs
-
-		// mise Ã  jour de la position
+		// mise à  jour de la position
 		if (etatController.isEnMouvement()) {
 			if (Sens.DESCENTE == sens) {
 				position--;
@@ -185,7 +186,6 @@ public class Controller implements IController {
 			}
 		}
 		System.out.println("Signal de franchissement de palier (Cabine en " + position + ")");
-
 		switch (etatController) {
 		case MONTEE:
 		case DESCENTE:
@@ -209,15 +209,12 @@ public class Controller implements IController {
 			indefini.remove(demandeInitiale(demandeEnCours));
 			arreter();
 			break;
-
 		default:
 			break;
 		}
 	}
 
-	/**
-	 * Arreter()
-	 *  
+	/** 
 	 * Met a jour l'état du controller en fonction de la demande suivante
 	 * S'il n'y a pas de demande : Attente
 	 * Si la demande suivante est supérieur a la position : montée
@@ -250,8 +247,6 @@ public class Controller implements IController {
 	}
 
 	/**
-	 * arretDUrgence()
-	 * 
 	 * Vide la liste
 	 * Eteint tous les boutons
 	 * Passe l'état du controller en attente
@@ -264,18 +259,14 @@ public class Controller implements IController {
 	}
 
 	/**
-	 * getPosition()
-	 * 
 	 * Retourne la position de la cabine
-	 * @return position
+	 * @return int position
 	 */
 	public int getPosition() {
 		return position;
 	}
 
 	/**
-	 * stopNext()
-	 * 
 	 * Est-ce que la cabine va devoir s'arreter la prochaine etage.
 	 * IE la cabine monte, et il y a une demande en cabine.position + 1 , montée
 	 * ou indefini
@@ -307,10 +298,8 @@ public class Controller implements IController {
 	}
 
 	/**
-	 * majEtat(EtatController)
-	 * 
 	 * Met a jour l'état du controller par rapport au paramètre
-	 * @param etat
+	 * @param EtatController etat
 	 */
 	private void majEtat(EtatController etat) {
 		this.etatController = etat;
@@ -333,12 +322,9 @@ public class Controller implements IController {
 		} else {
 			cabine.arreter();
 		}
-
 	}
 
 	/**
-	 * majPosition()
-	 * 
 	 * Change la position de la cabine
 	 * Signal a la cabine de monter, descendre ou s'arreter selon notre etat
 	 */
@@ -349,21 +335,16 @@ public class Controller implements IController {
 		case MONTEE:
 			cabine.monter();
 			break;
-
 		case DESCENTE:
 			cabine.descendre();
 			break;
-
 		case INDEFINI:
 			cabine.arreter();
 			break;
 		}
-
 	}
 
 	/**
-	 * setPosition(int)
-	 * 
 	 * Permet de placer la cabine a la position passé en paramètre
 	 * @param position
 	 */
