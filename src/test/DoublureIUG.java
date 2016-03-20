@@ -8,7 +8,7 @@ import outils.Sens;
 import tp4.IIUG;
 
 public class DoublureIUG implements IIUG{
-	
+
 	private IController controller;
 
 	public void eteindreTousBoutons() {
@@ -40,7 +40,7 @@ public class DoublureIUG implements IIUG{
 
 	public void changerPosition(int position) {
 	}
-	
+
 	/**
 	 * Permet de donner un controller a l'IUG
 	 */

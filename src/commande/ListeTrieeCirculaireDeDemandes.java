@@ -108,7 +108,7 @@ public class ListeTrieeCirculaireDeDemandes implements IListeTrieeCirculaire<Dem
 				|| (e.etage() == this.etage - 1 && e.enMontee()) 
 				|| (e.etage() < 0)
 				|| (e.etage() > this.etage - 1) 
-		) {
+				) {
 			throw new IllegalArgumentException();
 		}
 		maListe.add(e);
@@ -141,7 +141,7 @@ public class ListeTrieeCirculaireDeDemandes implements IListeTrieeCirculaire<Dem
 			if(indice < 0){
 				indice = ref.size() - indice; 
 			}
-			
+
 			if(maListe.contains(this.ref.get(indice))){
 				return this.ref.get(indice);
 			}

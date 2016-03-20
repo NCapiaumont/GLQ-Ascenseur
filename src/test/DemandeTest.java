@@ -18,10 +18,10 @@ import outils.Sens;
  * Classe de test unitaire de la classe {@link outils.Demande}.
  */
 public class DemandeTest {
-	
+
 	private Demande d1, d2, d3, d4;
 
-	
+
 	@Before
 	public void setUp()  {
 		d1 = new Demande();
@@ -43,7 +43,7 @@ public class DemandeTest {
 		assertSame( 0, d1.etage());
 		assertTrue( d1.estIndefini());
 	}
-	
+
 	/**
 	 * Methode de test de {@link outils.Demande#Demande(int, outils.Sens)}.
 	 */
@@ -56,7 +56,7 @@ public class DemandeTest {
 		assertSame( 1, d4.etage());
 		assertTrue( d4.estIndefini());
 	}
-	
+
 	/**
 	 * Methode de test de {@link outils.Demande#etage()}.
 	 */
@@ -76,7 +76,7 @@ public class DemandeTest {
 		d3.passeEtageSuivant();
 		assertSame( 2, d3.etage());
 	}
-	
+
 	/**
 	 * Methode de test de {@link outils.Demande#passeEtageSuivant()}.
 	 * Cas exceptionnel.
@@ -98,7 +98,7 @@ public class DemandeTest {
 		assertEquals( Sens.DESCENTE, d3.sens());
 		assertEquals( Sens.INDEFINI, d4.sens());
 	}
-	
+
 	/**
 	 * Methode de test de {@link outils.Demande#enMontee()}.
 	 */

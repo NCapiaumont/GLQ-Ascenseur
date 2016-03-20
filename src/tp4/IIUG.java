@@ -11,9 +11,9 @@ public interface IIUG {
 	void allumerBouton(Demande d);
 
 	void eteindreBouton(Demande s);
-	
+
 	void changerPosition(int position); 
-	
+
 	void setController(IController controller);
 
 }

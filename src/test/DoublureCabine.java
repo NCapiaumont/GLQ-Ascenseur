@@ -7,9 +7,9 @@ public class DoublureCabine implements ICabine{
 
 	protected Sens sens ; 
 	protected int position ;
-	
+
 	private IController controller ; 
-	
+
 	public void arretProchainNiveau() {
 		System.out.println("Arrêter prochain étage");
 	}
@@ -26,7 +26,7 @@ public class DoublureCabine implements ICabine{
 		System.out.println("Monter");
 		position++ ;
 	}
-	
+
 	/**
 	 * Permet de donner un controller a l'IUG
 	 */

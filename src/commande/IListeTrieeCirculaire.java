@@ -22,12 +22,12 @@ public interface IListeTrieeCirculaire<E> {
 	 * @return true si la liste est vide, false sinon.
 	 */
 	boolean estVide();
-	
+
 	/**
 	 * Vide la liste triee circulaire.
 	 */
 	void vider();
-	
+
 	/**
 	 * Teste si la liste circulaire triee contient un element.
 	 * @param e l'element pour lequel on teste la presence.
@@ -43,8 +43,8 @@ public interface IListeTrieeCirculaire<E> {
 	 * @throws IllegalArgumentException si l'element est deja dans la liste 
 	 */
 	void inserer(E e);
-	
-	
+
+
 	/**
 	 * Supprime un element de la liste circulaire triee.
 	 * @param e l'element a supprimer
@@ -52,7 +52,7 @@ public interface IListeTrieeCirculaire<E> {
 	 * dans la liste.
 	 */
 	void supprimer(E e);
-	
+
 	/**
 	 * Recherche l'element suivant dans la liste triee circulaire,
 	 * de l'element donne en parametre. L'element donne en parametre 

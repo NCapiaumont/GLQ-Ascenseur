@@ -11,6 +11,6 @@ public interface ICabine {
 	void descendre();
 
 	void monter();
-	
+
 	void setController(IController controller);
 }

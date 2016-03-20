@@ -14,7 +14,7 @@ public class Controller implements IController {
 	private Sens sens;
 	private EtatController etatController;
 	ArrayList<Demande> indefini = new ArrayList<Demande>();
-	
+
 	/**
 	 * Retourne la liste des demandes indéfini
 	 * @return ArrayList<Demande>
@@ -294,7 +294,7 @@ public class Controller implements IController {
 		} else {
 			return liste.contient(demandeRecherchee1); 
 		}
-		
+
 	}
 
 	/**

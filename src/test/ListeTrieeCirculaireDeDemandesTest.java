@@ -23,7 +23,7 @@ import commande.ListeTrieeCirculaireDeDemandes;
 public class ListeTrieeCirculaireDeDemandesTest {
 
 	private IListeTrieeCirculaire<Demande> suite1, suite2;
-	
+
 	@Before
 	public void setUp() {
 		suite1 = new ListeTrieeCirculaireDeDemandes( 10);
@@ -72,7 +72,7 @@ public class ListeTrieeCirculaireDeDemandesTest {
 		suite2.inserer( new Demande( 1, Sens.DESCENTE));
 		assertFalse( suite2.estVide());
 	}
-	
+
 	/**
 	 * Methode de test de {@link commande.ListeTrieeCirculaireDeDemandes#taille()}.
 	 */
@@ -99,7 +99,7 @@ public class ListeTrieeCirculaireDeDemandesTest {
 		assertEquals( suite1.toString(), "[2^,4^,8^,9v,8v,4v,3v,1v]");
 		suite1.inserer( new Demande(0, Sens.MONTEE));
 		assertEquals( suite1.toString(), "[0^,2^,4^,8^,9v,8v,4v,3v,1v]");
-		
+
 		suite1.inserer( new Demande(8, Sens.DESCENTE));
 		assertEquals( suite1.toString(), "[0^,2^,4^,8^,9v,8v,4v,3v,1v]");
 		suite1.inserer( new Demande(9, Sens.DESCENTE));
@@ -113,7 +113,7 @@ public class ListeTrieeCirculaireDeDemandesTest {
 		suite1.inserer( new Demande(8, Sens.MONTEE));
 		assertEquals( suite1.toString(), "[0^,2^,4^,8^,9v,8v,4v,3v,1v]");
 	}
-	
+
 	/**
 	 * Methode de test de {@link commande.ListeTrieeCirculaireDeDemande#inserer(outils.Demande)}.
 	 * Cas exceptionnel.
@@ -122,7 +122,7 @@ public class ListeTrieeCirculaireDeDemandesTest {
 	public void testInserer2() {
 		suite1.inserer( new Demande(4, Sens.INDEFINI));
 	}
-	
+
 	/**
 	 * Methode de test de {@link commande.ListeTrieeCirculaireDeDemande#inserer(outils.Demande)}.
 	 * Cas exceptionnel.
@@ -176,7 +176,7 @@ public class ListeTrieeCirculaireDeDemandesTest {
 	public void testInserer8() {
 		suite1.inserer( new Demande(10, Sens.DESCENTE));
 	}
-	
+
 	/**
 	 * Methode de test de {@link commande.ListeTrieeCirculaireDeDemande#inserer(outils.Demande)}.
 	 * Cas exceptionnel.
@@ -194,7 +194,7 @@ public class ListeTrieeCirculaireDeDemandesTest {
 	public void testInserer10() {
 		suite1.inserer( new Demande(12, Sens.INDEFINI));
 	}
-	
+
 	/**
 	 * Methode de test {@link commande.ListeTrieeCirculaireDeDemandes#supprimer(outils.Demande)}.
 	 * Cas normaux.
@@ -210,7 +210,7 @@ public class ListeTrieeCirculaireDeDemandesTest {
 		suite1.supprimer( new Demande(4, Sens.DESCENTE));
 		assertTrue( suite1.estVide());
 	}
-	
+
 	/**
 	 * Methode de test {@link commande.ListeTrieeCirculaireDeDemandes#supprimer(outils.Demande)}.
 	 * Cas Exceptionnel.
@@ -253,7 +253,7 @@ public class ListeTrieeCirculaireDeDemandesTest {
 	@Test
 	public void testSuivantDe() {
 		assertNull( suite2.suivantDe(new Demande(3,Sens.MONTEE)));
-		
+
 		suite2.inserer( new Demande( 3, Sens.MONTEE));
 		assertEquals( suite2.toString(), "[3^]");
 		assertEquals( new Demande( 3, Sens.MONTEE), 
@@ -266,13 +266,13 @@ public class ListeTrieeCirculaireDeDemandesTest {
 				suite2.suivantDe(new Demande( 4, Sens.DESCENTE)));
 
 		suite2.inserer( new Demande( 0, Sens.MONTEE));
-		
+
 		assertEquals( suite2.toString(), "[0^,3^]");
-		
-		
+
+
 		assertEquals( new Demande( 3, Sens.MONTEE), 
 				suite2.suivantDe(new Demande(1, Sens.MONTEE)));
-		
+
 
 		assertEquals( new Demande( 0, Sens.MONTEE), 
 				suite2.suivantDe(new Demande( 4, Sens.MONTEE)));
@@ -294,7 +294,7 @@ public class ListeTrieeCirculaireDeDemandesTest {
 				suite2.suivantDe(new Demande(3, Sens.DESCENTE)));
 		assertEquals( new Demande( 4, Sens.DESCENTE), 
 				suite2.suivantDe(new Demande( 1, Sens.DESCENTE)));
-		
+
 		assertEquals( suite1.toString(), "[2^,8^,8v,4v]");
 		assertEquals( new Demande(2,Sens.MONTEE), 
 				suite1.suivantDe(new Demande(0,Sens.MONTEE)));
