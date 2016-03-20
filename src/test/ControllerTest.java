@@ -270,33 +270,40 @@ public class ControllerTest {
 	public void casTest6(){
 		controller.setPosition(2);
 		controller.demander(new Demande(3, Sens.INDEFINI));
-		controller.demander(new Demande(4, Sens.MONTEE));
 		controller.signalerChangementDEtage();
+		controller.demander(new Demande(4, Sens.MONTEE));
 		controller.demander(new Demande(3, Sens.DESCENTE));
 		controller.demander(new Demande(2, Sens.INDEFINI));
 		controller.signalerChangementDEtage();
 		controller.signalerChangementDEtage();
 		controller.signalerChangementDEtage();
 		
+		
 		StringBuffer attendu = new StringBuffer("(Cabine en 2)" + lineSeparator
-				+"Appel 3-" + lineSeparator
-				+"Allumer bouton 3-" + lineSeparator
-				+"Monter" + lineSeparator
-				+"Appel 4^" + lineSeparator
-				+"Arrêter prochain étage" + lineSeparator
-				+"Signal de franchissement de palier (Cabine en 3)" + lineSeparator
-				+"Eteindre bouton 3-" + lineSeparator
-				+"Appel 3v" + lineSeparator
-				+"Appel 2-" + lineSeparator
-				+"Monter" + lineSeparator
-				+"Arrêter prochain étage" + lineSeparator
-				+"Signal de franchissement de palier (Cabine en 4)" + lineSeparator
-				+"Eteindre bouton 4^" + lineSeparator
-				+"Descendre" + lineSeparator
-				+"Signal de franchissement de palier (Cabine en 3)" + lineSeparator
-				+"Arrêter prochain étage" + lineSeparator
-				+"Signal de franchissement de palier (Cabine en 2)" + lineSeparator
-				+"Eteindre bouton 2-" + lineSeparator);
+				+ "Appel 3-" + lineSeparator
+				+ "Allumer bouton 3-" + lineSeparator
+				+ "Arrêter prochain étage" + lineSeparator
+				+ "Monter" + lineSeparator
+				+ "Signal de franchissement de palier (Cabine en 3)" + lineSeparator
+				+ "Eteindre bouton 3-" + lineSeparator
+				+ "Appel 4^" + lineSeparator
+				+ "Allumer bouton 4^" + lineSeparator
+				+ "Arrêter prochain étage" + lineSeparator
+				+ "Monter" + lineSeparator
+				+ "Appel 3v" + lineSeparator
+				+ "Allumer bouton 3v" + lineSeparator
+				+ "Appel 2-" + lineSeparator
+				+ "Allumer bouton 2-" + lineSeparator
+				+ "Signal de franchissement de palier (Cabine en 4)" + lineSeparator
+				+ "Eteindre bouton 4^" + lineSeparator
+				+ "Arrêter prochain étage" + lineSeparator
+				+ "Descendre" + lineSeparator
+				+ "Signal de franchissement de palier (Cabine en 3)" + lineSeparator
+				+ "Eteindre bouton 3v" + lineSeparator
+				+ "Arrêter prochain étage" + lineSeparator
+				+ "Descendre" + lineSeparator
+				+ "Signal de franchissement de palier (Cabine en 2)" + lineSeparator
+				+ "Eteindre bouton 2-" + lineSeparator);
 		assertEquals(attendu.toString(), baos.toString());
 		assertTrue(demandes.estVide());
 	}

@@ -95,6 +95,7 @@ public class Controller implements IController {
 	 * executer une demande en fonction de l'etat du controller
 	 */
 	public void demander(Demande d) { // cas bleus7
+		System.out.println("Appel " + d.toString());
 		if (d.estIndefini()) {
 			if(!indefini.contains(d)) indefini.add(d);
 			if (d.etage() > this.position) {
@@ -104,7 +105,6 @@ public class Controller implements IController {
 				d = new Demande(d.etage(),Sens.DESCENTE);
 			}
 		}
-		System.out.println("Appel " + demandeInitiale(d).toString());
 		switch (this.etatController) {
 		case ATTENTE:
 			liste.inserer(d);
@@ -112,29 +112,29 @@ public class Controller implements IController {
 			if (d.etage() == this.position) {
 				// ToDo (ex : ouverture des portes)
 			}
-
-			// cas 1 bleu
-			if (d.etage() > this.position) {
+			else if (Math.abs(d.etage() - this.position) == 1) {
 				iug.allumerBouton(demandeInitiale(d));
-				majEtat(EtatController.MONTEE);
-			}
-
-			// cas 2 bleu
-			if (d.etage() < this.position) {
-				iug.allumerBouton(demandeInitiale(d));
-				majEtat(EtatController.DESCENTE);
-			}
-
-			// cas 3 bleu
-			int deltaEtage = d.etage() - this.position;
-			if (Math.abs(deltaEtage) == 1) {
-				if (deltaEtage > 0) {
+				if (d.etage() - this.position > 0) {
 					this.sens = Sens.MONTEE;
 				} else {
 					this.sens = Sens.DESCENTE;
 				}
 				majEtat(EtatController.ARRET_IMMINENT);
 			}
+			// cas 1 bleu
+			else if (d.etage() > this.position) {
+				iug.allumerBouton(demandeInitiale(d));
+				majEtat(EtatController.MONTEE);
+			}
+
+			// cas 2 bleu
+			else if (d.etage() < this.position) {
+				iug.allumerBouton(demandeInitiale(d));
+				majEtat(EtatController.DESCENTE);
+			}
+
+			// cas 3 bleu
+			
 			break;
 		case MONTEE:
 		case DESCENTE:
