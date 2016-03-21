@@ -1,6 +1,10 @@
 package commande;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import operative.ICabine;
 import operative.IIUG;
 import outils.Demande;
@@ -14,6 +18,22 @@ public class Controleur implements IControleur {
 	private Sens sens;
 	private EtatController etatController;
 	ArrayList<Demande> indefini = new ArrayList<Demande>();
+
+	//Permet le calcul des temps d'attentes. (Voir dans insererDemande(), supprimerDemande(Demande d), demander(Demande(d))
+	//Cette map stocke pour chaque demande de palier, la date d'ajout.
+	protected Map<Demande, Date> attentes = new HashMap<Demande, Date>();
+
+	//attente maximum ecoulee
+	private long attenteMax = 0 ;
+	//attente minimum
+	private long attenteMin = Long.MAX_VALUE ;
+	//cumul des attentes
+	private long attenteTotale = 0 ;
+	//attente moyenne
+	private long attenteMoyenne = 0;
+	//cumul des demandes
+	private int nbDemande = 0;
+
 
 	/**
 	 * Constructeur de la classe contoller
@@ -56,6 +76,54 @@ public class Controleur implements IControleur {
 	public EtatController getEtatController() {
 		return etatController;
 	}
+
+	private void insereDemande(Demande demande, boolean isPallier){
+		liste.inserer(demande);
+		
+		//si demande pallier, on stocke la date d'insertion
+		if (isPallier){
+			attentes.put(demande,new Date());
+			nbDemande = nbDemande+1;
+		}
+	}
+	
+	/**
+	 * Supprime une demande de la liste des demande.
+	 * Si le demande était en attende, calcul le temps écoulé
+	 * @param d
+	 */
+	private void supprimerDemande(Demande d){
+		liste.supprimer(d);
+		
+		//Si la demande Ã©tait en attente, calcul du temps passÃ©, et mise Ã  jour des compteurs.
+		if(attentes.containsKey(d)){
+			Date dd = attentes.get(d);
+			Date df = new Date();
+			long tpsAttente = df.getTime() - dd.getTime();
+			
+			//Suppression de la demande de la liste d'attente
+			attentes.remove(d);
+			
+			//Calcul de l'attente totale
+			attenteTotale = attenteTotale+tpsAttente;
+			
+			//Calcul de l'attente max
+			if(tpsAttente>attenteMax){
+				attenteMax=tpsAttente;
+			}
+			
+			//Calcul de l'attente min
+			if(tpsAttente<attenteMin){
+				attenteMin=tpsAttente;
+			}
+			
+			//Calcul de l'attente moyenne
+			attenteMoyenne=attenteTotale/nbDemande;
+			
+			//A afficher dans l'IUG
+		}
+	}
+
 
 	/**
 	 * enum pour representer l'etat du controller
@@ -111,8 +179,10 @@ public class Controleur implements IControleur {
 	 * Executer une demande en fonction de l'etat du controller
 	 */
 	public void demander(Demande d) { // cas bleus7
+		boolean isPallier = true; 
 		System.out.println("Appel " + d.toString());
 		if (d.estIndefini()) {
+			isPallier = false; 
 			if(!indefini.contains(d)) indefini.add(d);
 			if (d.etage() >= this.position) {
 				if (d.etage() == this.liste.getEtage()-1)
@@ -129,8 +199,8 @@ public class Controleur implements IControleur {
 		}
 		switch (this.etatController) {
 		case ATTENTE:
+			insereDemande(d, isPallier);
 			System.out.println(d);
-			liste.inserer(d);
 			// cas particulier
 			if (d.etage() == this.position) {
 				// ToDo (ex : ouverture des portes)
@@ -164,7 +234,7 @@ public class Controleur implements IControleur {
 			// Même traitement pour l'etat Montee ou Descente en cas de demande
 			// (pas de break entre les 2 cases)
 			// cas 6 bleu
-			liste.inserer(d);
+			insereDemande(d, isPallier);
 			iug.allumerBouton(demandeInitiale(d));
 			break;
 		case ARRET_IMMINENT:
@@ -175,14 +245,14 @@ public class Controleur implements IControleur {
 			int absDeltaEtage = Math.abs(d.etage() - this.position);
 			if (absDeltaEtage > 1 
 					|| (this.sens != d.sens())) {
-				liste.inserer(d);
+				insereDemande(d, isPallier);
 				iug.allumerBouton(demandeInitiale(d));
 			}
 			break;
 		case ARRET_ETAGE:
 			// cas 14 bleu
 			if (d.etage() != this.position || !d.sens().toString().equals(this.etatController.toString())) {
-				liste.inserer(d);
+				insereDemande(d, isPallier);
 				iug.eteindreBouton(demandeInitiale(d));
 				indefini.remove(demandeInitiale(d));
 			}
@@ -233,7 +303,7 @@ public class Controleur implements IControleur {
 			}
 			else 		
 				demandeEnCours = liste.suivantDe(new Demande(this.position , this.sens));			
-			liste.supprimer(demandeEnCours);
+			supprimerDemande(demandeEnCours);
 			iug.eteindreBouton(demandeInitiale(demandeEnCours));
 			indefini.remove(demandeInitiale(demandeEnCours));
 			arreter();
@@ -296,10 +366,8 @@ public class Controleur implements IControleur {
 			Demande boutonDeMaDemandeIndefinie = new Demande(monBouton.etage(), Sens.INDEFINI);
 			if (this.indefini.contains(boutonDeMaDemandeIndefinie)) {
 				iug.eteindreBouton(boutonDeMaDemandeIndefinie);
-				//System.out.println("Eteindre bouton "+boutonDeMaDemandeIndefinie.toString());
 			} else {
 				iug.eteindreBouton(monBouton);
-				//System.out.println("Eteindre bouton "+monBouton.toString());
 			}
 		}
 
