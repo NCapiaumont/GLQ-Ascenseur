@@ -69,4 +69,13 @@ public interface IListeTrieeCirculaire<E> {
 	 * 
 	 */
 	E suivantDe( E courant);
+
+	void setEtage(int nbEtages);
+	
+	int getEtage();
+	
+	public Set<Demande> getMaListe();
+
+	public void setMaListe(Set<Demande> maListe);
+
 }

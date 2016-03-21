@@ -167,4 +167,28 @@ public class ListeTrieeCirculaireDeDemandes implements IListeTrieeCirculaire<Dem
 			s = "[]";
 		return s;
 	}
+	
+	/**
+	 * Permet de modifier le nombre d'étage
+	 * @param int etage
+	 */
+	public void setEtage(int etage) {
+		this.etage = etage;
+	}
+	
+	/**
+	 * Retourne le nombre d'étage
+	 * @return int nombre d'étage
+	 */
+	public int getEtage() {
+		return this.etage;
+	}
+
+	public Set<Demande> getMaListe() {
+		return maListe;
+	}
+
+	public void setMaListe(Set<Demande> maListe) {
+		this.maListe = maListe;
+	}
 }

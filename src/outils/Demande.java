@@ -1,7 +1,7 @@
 package outils;
 
 public class Demande {
-	private int palier;
+	private Integer palier;
 	private Sens sens;
 
 	/**
@@ -35,7 +35,7 @@ public class Demande {
 	 * retourne le palier de la demande 
 	 * @return int palier
 	 */
-	public int etage() {
+	public Integer etage() {
 		return this.palier;
 	}
 

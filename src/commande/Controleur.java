@@ -1,12 +1,10 @@
 package commande;
 
 import java.util.ArrayList;
-
 import operative.ICabine;
 import operative.IIUG;
 import outils.Demande;
 import outils.Sens;
-
 
 public class Controleur implements IControleur {
 	private IListeTrieeCirculaire<Demande> liste;
@@ -32,12 +30,15 @@ public class Controleur implements IControleur {
 		this.position = 0;
 		etatController = EtatController.ATTENTE;
 	}
-	
-	public Controleur(int nbEtages, IIUG iug2, ICabine cabine2,
+
+	public Controleur(int nbEtages, IIUG iug, ICabine cabine,
 			IListeTrieeCirculaire<Demande> liste) {
 		this.liste = liste;
 		this.position = 0;
-		etatController = EtatController.ATTENTE;
+		this.etatController = EtatController.ATTENTE;
+		this.iug = iug;
+		this.cabine = cabine;
+		this.liste.setEtage(nbEtages);
 	}
 
 	/**
@@ -113,15 +114,22 @@ public class Controleur implements IControleur {
 		System.out.println("Appel " + d.toString());
 		if (d.estIndefini()) {
 			if(!indefini.contains(d)) indefini.add(d);
-			if (d.etage() > this.position) {
-				d = new Demande(d.etage(),Sens.MONTEE);
+			if (d.etage() >= this.position) {
+				if (d.etage() == this.liste.getEtage()-1)
+					d = new Demande(d.etage(), Sens.DESCENTE);
+				else 
+					d = new Demande(d.etage(),Sens.MONTEE);
 			}
-			else if (d.etage() < this.position){
-				d = new Demande(d.etage(),Sens.DESCENTE);
+			else if (d.etage() <= this.position){
+				if (d.etage() == 0)
+					d = new Demande(d.etage(), Sens.MONTEE);
+				else 
+					d = new Demande(d.etage(),Sens.DESCENTE);
 			}
 		}
 		switch (this.etatController) {
 		case ATTENTE:
+			System.out.println(d);
 			liste.inserer(d);
 			// cas particulier
 			if (d.etage() == this.position) {
@@ -139,6 +147,8 @@ public class Controleur implements IControleur {
 			}
 			// cas 1 bleu
 			else if (d.etage() > this.position) {
+
+				System.out.println(demandeInitiale(d)+" "+iug);
 				iug.allumerBouton(demandeInitiale(d));
 				majEtat(EtatController.MONTEE);
 			}
@@ -185,13 +195,16 @@ public class Controleur implements IControleur {
 	/**
 	 * Signaler le changement d'etage et mit a jour la position
 	 */
-	public void signalerChangementDEtage() { // cas noirs
+	public synchronized void signalerChangementDEtage() { // cas noirs
 		// mise à  jour de la position
+		Demande demandeEnCours;
 		if (etatController.isEnMouvement()) {
 			if (Sens.DESCENTE == sens) {
 				position--;
+				iug.changerPosition(this.position);
 			} else if (Sens.MONTEE == sens) {
 				position++;
+				iug.changerPosition(this.position);
 			}
 		}
 		System.out.println("Signal de franchissement de palier (Cabine en " + position + ")");
@@ -212,7 +225,14 @@ public class Controleur implements IControleur {
 		case ARRET_IMMINENT:
 			// cas 9 noir
 			// recherche de la demande en cours
-			Demande demandeEnCours = liste.suivantDe(new Demande(this.position, this.sens));
+			if(this.position == this.liste.getEtage()-1){
+				demandeEnCours = liste.suivantDe(new Demande(this.position -1, Sens.DESCENTE));	
+			}
+			else if(this.position == 0) {
+				demandeEnCours = liste.suivantDe(new Demande(this.position , Sens.MONTEE));
+			}
+			else 		
+				demandeEnCours = liste.suivantDe(new Demande(this.position , this.sens));			
 			liste.supprimer(demandeEnCours);
 			iug.eteindreBouton(demandeInitiale(demandeEnCours));
 			indefini.remove(demandeInitiale(demandeEnCours));
@@ -221,6 +241,7 @@ public class Controleur implements IControleur {
 		default:
 			break;
 		}
+
 	}
 
 	/** 
@@ -231,8 +252,16 @@ public class Controleur implements IControleur {
 	 * Sinon : arret etage
 	 */
 	void arreter() { // cas verts
+		Demande demandeSuivante;
 		majEtat(EtatController.ARRET_ETAGE);
-		Demande demandeSuivante = liste.suivantDe(new Demande(this.position, this.sens));
+		if(this.position == this.liste.getEtage()-1){
+			demandeSuivante = liste.suivantDe(new Demande(this.position -1, Sens.DESCENTE));	
+		}
+		else if(this.position == 0) {
+			demandeSuivante = liste.suivantDe(new Demande(this.position , Sens.MONTEE));
+		}
+		else 			
+			demandeSuivante = liste.suivantDe(new Demande(this.position , this.sens));
 		// cas 13
 		if (demandeSuivante == null) {
 			majEtat(EtatController.ATTENTE);
@@ -262,8 +291,8 @@ public class Controleur implements IControleur {
 	 */
 	public void arretUrgence() { // cas rouges
 		System.out.println("Arrêt d'urgence");
-		
-		for (Demande monBouton : this.liste.maListe) {
+
+		for (Demande monBouton : this.liste.getMaListe()) {
 			Demande boutonDeMaDemandeIndefinie = new Demande(monBouton.etage(), Sens.INDEFINI);
 			if (this.indefini.contains(boutonDeMaDemandeIndefinie)) {
 				iug.eteindreBouton(boutonDeMaDemandeIndefinie);
@@ -273,7 +302,7 @@ public class Controleur implements IControleur {
 				//System.out.println("Eteindre bouton "+monBouton.toString());
 			}
 		}
-		
+
 		liste.vider();
 		majEtat(EtatController.ATTENTE);
 	}
@@ -283,7 +312,7 @@ public class Controleur implements IControleur {
 	 * @return int position
 	 */
 	public int getPosition() {
-		return position;
+		return this.position;
 	}
 
 	/**
@@ -296,8 +325,18 @@ public class Controleur implements IControleur {
 	 */
 	boolean stopNext() {
 		int positionRecherchee = this.position;
-		Demande d = new Demande(this.position,this.sens);
+		Demande d;
+		if(this.position == this.liste.getEtage()-1){
+			d = new Demande(this.position , Sens.DESCENTE);	
+		}
+		else if(this.position == 0) {
+			d = new Demande(this.position , Sens.MONTEE);
+		}
+		else {
+			d = new Demande(this.position,this.sens);
+		}
 		d = liste.suivantDe(d);
+
 		if(this.position>d.etage()) this.sens = Sens.DESCENTE;
 		else if(this.position<d.etage()) this.sens = Sens.MONTEE;
 
@@ -314,7 +353,6 @@ public class Controleur implements IControleur {
 		} else {
 			return liste.contient(demandeRecherchee1); 
 		}
-
 	}
 
 	/**
@@ -376,6 +414,6 @@ public class Controleur implements IControleur {
 	@Override
 	public void exit() {
 		// TODO Auto-generated method stub
-		
+
 	}
 }
