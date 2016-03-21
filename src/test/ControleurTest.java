@@ -3,23 +3,26 @@ package test;
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.PrintStream;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import commande.ListeTrieeCirculaireDeDemandes;
 import outils.Demande;
 import outils.Sens;
-import tp4.*;
+import operative.ICabine;
+import operative.IIUG;
+import operative.Cabine;
+import operative.IUG;
+import commande.Controleur;
+import commande.ListeTrieeCirculaireDeDemandes;
 
-public class ControllerTest {
+public class ControleurTest {
 	ListeTrieeCirculaireDeDemandes demandes;
-	ICabine Cabine;
+	ICabine cabine;
 	IIUG iug;
-	Controller controller;
+	Controleur controleur;
 	PrintStream old;
 	PrintStream ps;
 	ByteArrayOutputStream baos;
@@ -28,31 +31,38 @@ public class ControllerTest {
 	@Before
 	public void setUp()  {
 		// Create a stream to hold the output
-		baos = new ByteArrayOutputStream();
+		this.baos = new ByteArrayOutputStream();
 		// IMPORTANT: Save the old System.out!
-		old = System.out;
+		this.old = System.out;
 		// Tell Java to use your special stream
-		ps = new PrintStream(baos);
-		System.setOut(ps);
+		this.ps = new PrintStream(this.baos);
+		System.setOut(this.ps);
 
-		demandes = new ListeTrieeCirculaireDeDemandes(10);
-		Cabine = new DoublureCabine();
-		iug  = new DoublureIUG();
-		controller = new Controller(demandes);
+		this.demandes = new ListeTrieeCirculaireDeDemandes(10);
+		//public Cabine(long dureePas, int nbPasParEtage, int dureeArretCabine);
+		this.cabine = new Cabine(50L, 5, 10);
+		//public IUG(int n, java.lang.String date, boolean synchronisation) throws java.lang.Exception;
+		//public IUG(int n) throws java.lang.Exception;
+		try {
+			this.iug  = new IUG(5);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		this.controleur = new Controleur(demandes);
 
-		// on affecte le controller a l'iug et la Cabine et on affecte la Cabine et l'iug au controller
-		controller.setCabine(Cabine);
-		controller.setIUG(iug);
-		iug.setController(controller);
-		Cabine.setController(controller);
+		// on affecte le controleur a l'iug et la Cabine et on affecte la Cabine et l'iug au controleur
+		this.controleur.setCabine(cabine);
+		this.controleur.setIUG(iug);
+		this.iug.assignerControleur(controleur);
+		this.cabine.assignerControleur(controleur);
 	}
 
 	@After
 	public void tearDown() {
-		demandes = null;
-		Cabine = null;
-		iug = null;
-		controller = null;
+		this.demandes = null;
+		this.cabine = null;
+		this.iug = null;
+		this.controleur = null;
 		// Put things back
 		System.out.flush();
 		System.setOut(old);
@@ -60,10 +70,10 @@ public class ControllerTest {
 
 	@Test
 	public void casTest1() {
-		controller.setPosition(3);
-		controller.demander(new Demande(1, Sens.MONTEE));
-		controller.signalerChangementDEtage();
-		controller.signalerChangementDEtage();
+		this.controleur.setPosition(3);
+		this.controleur.demander(new Demande(1, Sens.MONTEE));
+		this.controleur.signalerChangementDEtage();
+		this.controleur.signalerChangementDEtage();
 
 		StringBuffer attendu = new StringBuffer("(Cabine en 3)" + lineSeparator
 				+ "Appel 1^" + lineSeparator
@@ -75,18 +85,18 @@ public class ControllerTest {
 				+ "Signal de franchissement de palier (Cabine en 1)" + lineSeparator
 				+ "Eteindre bouton 1^" + lineSeparator);
 
-		assertEquals(attendu.toString(), baos.toString());
-		assertTrue(demandes.estVide());
+		assertEquals(attendu.toString(), this.baos.toString());
+		assertTrue(this.demandes.estVide());
 	}
 
 	@Test
 	public void casTest2() {
-		controller.setPosition(2);
-		controller.demander(new Demande(5, Sens.INDEFINI));
-		controller.demander(new Demande(4, Sens.MONTEE));
-		controller.signalerChangementDEtage();
-		controller.signalerChangementDEtage();
-		controller.signalerChangementDEtage();
+		this.controleur.setPosition(2);
+		this.controleur.demander(new Demande(5, Sens.INDEFINI));
+		this.controleur.demander(new Demande(4, Sens.MONTEE));
+		this.controleur.signalerChangementDEtage();
+		this.controleur.signalerChangementDEtage();
+		this.controleur.signalerChangementDEtage();
 
 		StringBuffer attendu = new StringBuffer("(Cabine en 2)" + lineSeparator
 				+ "Appel 5-" + lineSeparator
@@ -103,19 +113,19 @@ public class ControllerTest {
 				+ "Monter" + lineSeparator
 				+ "Signal de franchissement de palier (Cabine en 5)" + lineSeparator
 				+ "Eteindre bouton 5-" + lineSeparator);
-		assertEquals(attendu.toString(), baos.toString());
-		assertTrue(demandes.estVide());
+		assertEquals(attendu.toString(), this.baos.toString());
+		assertTrue(this.demandes.estVide());
 	}
 
 	@Test
 	public void casTest3() {
-		controller.setPosition(2);
-		controller.demander(new Demande(5, Sens.INDEFINI));
-		controller.demander(new Demande(4, Sens.DESCENTE));
-		controller.signalerChangementDEtage();
-		controller.signalerChangementDEtage();
-		controller.signalerChangementDEtage();
-		controller.signalerChangementDEtage();
+		this.controleur.setPosition(2);
+		this.controleur.demander(new Demande(5, Sens.INDEFINI));
+		this.controleur.demander(new Demande(4, Sens.DESCENTE));
+		this.controleur.signalerChangementDEtage();
+		this.controleur.signalerChangementDEtage();
+		this.controleur.signalerChangementDEtage();
+		this.controleur.signalerChangementDEtage();
 
 		StringBuffer attendu = new StringBuffer("(Cabine en 2)" + lineSeparator
 				+ "Appel 5-" + lineSeparator
@@ -134,32 +144,32 @@ public class ControllerTest {
 				+ "Descendre" + lineSeparator
 				+ "Signal de franchissement de palier (Cabine en 4)" + lineSeparator
 				+ "Eteindre bouton 4v" + lineSeparator);
-		assertEquals(attendu.toString(), baos.toString());
-		assertTrue(demandes.estVide());
+		assertEquals(attendu.toString(), this.baos.toString());
+		assertTrue(this.demandes.estVide());
 	}
 
 	@Test
 	public void casTest4() {
-		controller.setPosition(2);
-		controller.demander(new Demande(5, Sens.INDEFINI));
-		controller.demander(new Demande(4, Sens.MONTEE));
-		controller.signalerChangementDEtage();
-		controller.signalerChangementDEtage();
-		controller.signalerChangementDEtage();
-		controller.demander(new Demande(7, Sens.INDEFINI));
-		controller.demander(new Demande(6, Sens. DESCENTE));
-		controller.signalerChangementDEtage();
-		controller.signalerChangementDEtage();
-		controller.signalerChangementDEtage();
-		controller.demander(new Demande(3, Sens.INDEFINI));
-		controller.demander(new Demande(5, Sens.MONTEE));
-		controller.signalerChangementDEtage();
-		controller.signalerChangementDEtage();
-		controller.signalerChangementDEtage();
-		controller.demander(new Demande(4, Sens.DESCENTE));
-		controller.signalerChangementDEtage();
-		controller.signalerChangementDEtage();
-		controller.signalerChangementDEtage();
+		this.controleur.setPosition(2);
+		this.controleur.demander(new Demande(5, Sens.INDEFINI));
+		this.controleur.demander(new Demande(4, Sens.MONTEE));
+		this.controleur.signalerChangementDEtage();
+		this.controleur.signalerChangementDEtage();
+		this.controleur.signalerChangementDEtage();
+		this.controleur.demander(new Demande(7, Sens.INDEFINI));
+		this.controleur.demander(new Demande(6, Sens. DESCENTE));
+		this.controleur.signalerChangementDEtage();
+		this.controleur.signalerChangementDEtage();
+		this.controleur.signalerChangementDEtage();
+		this.controleur.demander(new Demande(3, Sens.INDEFINI));
+		this.controleur.demander(new Demande(5, Sens.MONTEE));
+		this.controleur.signalerChangementDEtage();
+		this.controleur.signalerChangementDEtage();
+		this.controleur.signalerChangementDEtage();
+		this.controleur.demander(new Demande(4, Sens.DESCENTE));
+		this.controleur.signalerChangementDEtage();
+		this.controleur.signalerChangementDEtage();
+		this.controleur.signalerChangementDEtage();
 
 		StringBuffer attendu = new StringBuffer("(Cabine en 2)" + lineSeparator
 				+ "Appel 5-" + lineSeparator
@@ -214,24 +224,24 @@ public class ControllerTest {
 				+ "Descendre" + lineSeparator
 				+ "Signal de franchissement de palier (Cabine en 4)" + lineSeparator
 				+ "Eteindre bouton 4v" + lineSeparator);
-		assertEquals(attendu.toString(), baos.toString());
-		assertTrue(demandes.estVide());
+		assertEquals(attendu.toString(), this.baos.toString());
+		assertTrue(this.demandes.estVide());
 	}
 
 	@Test
 	public void casTest5() {
-		controller.setPosition(2);
-		controller.demander(new Demande(6, Sens.INDEFINI));
-		controller.demander(new Demande(5, Sens.DESCENTE));
-		controller.demander(new Demande(5, Sens.MONTEE));
-		controller.signalerChangementDEtage();
-		controller.signalerChangementDEtage();
-		controller.signalerChangementDEtage();
-		controller.demander(new Demande(6, Sens.INDEFINI));
-		controller.demander(new Demande(4, Sens.INDEFINI));
-		controller.signalerChangementDEtage();
-		controller.signalerChangementDEtage();
-		controller.signalerChangementDEtage();
+		this.controleur.setPosition(2);
+		this.controleur.demander(new Demande(6, Sens.INDEFINI));
+		this.controleur.demander(new Demande(5, Sens.DESCENTE));
+		this.controleur.demander(new Demande(5, Sens.MONTEE));
+		this.controleur.signalerChangementDEtage();
+		this.controleur.signalerChangementDEtage();
+		this.controleur.signalerChangementDEtage();
+		this.controleur.demander(new Demande(6, Sens.INDEFINI));
+		this.controleur.demander(new Demande(4, Sens.INDEFINI));
+		this.controleur.signalerChangementDEtage();
+		this.controleur.signalerChangementDEtage();
+		this.controleur.signalerChangementDEtage();
 
 		StringBuffer attendu = new StringBuffer("(Cabine en 2)" + lineSeparator
 				+ "Appel 6-" + lineSeparator
@@ -263,20 +273,20 @@ public class ControllerTest {
 				+ "Descendre" + lineSeparator
 				+ "Signal de franchissement de palier (Cabine en 4)" + lineSeparator
 				+ "Eteindre bouton 4-" + lineSeparator);
-		assertEquals(attendu.toString(), baos.toString());
-		assertTrue(demandes.estVide());
+		assertEquals(attendu.toString(), this.baos.toString());
+		assertTrue(this.demandes.estVide());
 	}
 	@Test
 	public void casTest6(){
-		controller.setPosition(2);
-		controller.demander(new Demande(3, Sens.INDEFINI));
-		controller.signalerChangementDEtage();
-		controller.demander(new Demande(4, Sens.MONTEE));
-		controller.demander(new Demande(3, Sens.DESCENTE));
-		controller.demander(new Demande(2, Sens.INDEFINI));
-		controller.signalerChangementDEtage();
-		controller.signalerChangementDEtage();
-		controller.signalerChangementDEtage();
+		this.controleur.setPosition(2);
+		this.controleur.demander(new Demande(3, Sens.INDEFINI));
+		this.controleur.signalerChangementDEtage();
+		this.controleur.demander(new Demande(4, Sens.MONTEE));
+		this.controleur.demander(new Demande(3, Sens.DESCENTE));
+		this.controleur.demander(new Demande(2, Sens.INDEFINI));
+		this.controleur.signalerChangementDEtage();
+		this.controleur.signalerChangementDEtage();
+		this.controleur.signalerChangementDEtage();
 
 
 		StringBuffer attendu = new StringBuffer("(Cabine en 2)" + lineSeparator
@@ -304,19 +314,19 @@ public class ControllerTest {
 				+ "Descendre" + lineSeparator
 				+ "Signal de franchissement de palier (Cabine en 2)" + lineSeparator
 				+ "Eteindre bouton 2-" + lineSeparator);
-		assertEquals(attendu.toString(), baos.toString());
-		assertTrue(demandes.estVide());
+		assertEquals(attendu.toString(), this.baos.toString());
+		assertTrue(this.demandes.estVide());
 	}
 	@Test
 	public void casTest7(){
-		controller.setPosition(2);
-		controller.demander(new Demande(5, Sens.INDEFINI));
-		controller.signalerChangementDEtage();
-		controller.demander(new Demande(6, Sens.DESCENTE));
-		controller.arretDUrgence();
-		controller.demander(new Demande(5, Sens.INDEFINI));
-		controller.signalerChangementDEtage();
-		controller.signalerChangementDEtage();
+		this.controleur.setPosition(2);
+		this.controleur.demander(new Demande(5, Sens.INDEFINI));
+		this.controleur.signalerChangementDEtage();
+		this.controleur.demander(new Demande(6, Sens.DESCENTE));
+		this.controleur.arretUrgence();
+		this.controleur.demander(new Demande(5, Sens.INDEFINI));
+		this.controleur.signalerChangementDEtage();
+		this.controleur.signalerChangementDEtage();
 
 		StringBuffer attendu = new StringBuffer("(Cabine en 2)" + lineSeparator
 				+ "Appel 5-" + lineSeparator
@@ -337,9 +347,8 @@ public class ControllerTest {
 				+ "Monter" + lineSeparator
 				+ "Signal de franchissement de palier (Cabine en 5)" + lineSeparator
 				+ "Eteindre bouton 5-" + lineSeparator);
-		assertEquals(attendu.toString(), baos.toString());
-		assertTrue(demandes.estVide());
-
+		assertEquals(attendu.toString(), this.baos.toString());
+		assertTrue(this.demandes.estVide());
 	}
 
 }

@@ -11,8 +11,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import outils.Demande;
-import outils.ExceptionCabineArretee;
 import outils.Sens;
+import outils.ExceptionCabineArretee;
 
 /**
  * Classe de test unitaire de la classe {@link outils.Demande}.

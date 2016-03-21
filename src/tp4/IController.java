@@ -1,14 +1,13 @@
-package test;
+package tp4;
 
 import java.util.ArrayList;
 
 import commande.ListeTrieeCirculaireDeDemandes;
 import outils.Demande;
-import tp4.*;
-public interface IController {
 
+public interface IController {
 	public void demander(Demande d);
-	public void arretDUrgence();
+	public void arretUrgence();
 	public void signalerChangementDEtage();
 	public void setCabine(ICabine cabine);
 	public ListeTrieeCirculaireDeDemandes getListe();

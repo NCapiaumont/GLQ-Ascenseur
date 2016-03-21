@@ -1,16 +1,15 @@
-package test;
+package tp4;
 
-import outils.Sens;
-import tp4.ICabine;
+import operative.ICabine;
+import commande.IControleur;
 
 public class DoublureCabine implements ICabine{
 
-	protected Sens sens ; 
 	protected int position ;
 
-	private IController controller ; 
+	private IControleur controleur ; 
 
-	public void arretProchainNiveau() {
+	public void arreterProchainNiveau() {
 		System.out.println("Arrêter prochain étage");
 	}
 
@@ -28,10 +27,9 @@ public class DoublureCabine implements ICabine{
 	}
 
 	/**
-	 * Permet de donner un controller a l'IUG
+	 * Permet de donner un controleur a l'IUG
 	 */
-	public void setController(IController controller) {
-		this.controller = controller;
+	public void assignerControleur(IControleur controleur) {
+		this.controleur = controleur;
 	}
-
 }

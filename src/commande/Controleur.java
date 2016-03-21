@@ -1,19 +1,44 @@
-package tp4;
+package commande;
 
 import java.util.ArrayList;
-import commande.ListeTrieeCirculaireDeDemandes;
+
+import operative.ICabine;
+import operative.IIUG;
 import outils.Demande;
 import outils.Sens;
-import test.IController;
 
-public class Controller implements IController {
-	private ListeTrieeCirculaireDeDemandes liste;
+
+public class Controleur implements IControleur {
+	private IListeTrieeCirculaire<Demande> liste;
 	private ICabine cabine;
 	private IIUG iug;
 	private int position;
 	private Sens sens;
 	private EtatController etatController;
 	ArrayList<Demande> indefini = new ArrayList<Demande>();
+
+	/**
+	 * Constructeur de la classe contoller
+	 * Initialise
+	 * <ul>
+	 * 	<li>liste avec notre liste en paramètre</li>
+	 * 	<li>position à 0</li>
+	 * 	<li>l'état de notre controlleur à ATTENTE</li>
+	 * <ul>
+	 * @param liste
+	 */
+	public Controleur(ListeTrieeCirculaireDeDemandes liste) {
+		this.liste = liste;
+		this.position = 0;
+		etatController = EtatController.ATTENTE;
+	}
+	
+	public Controleur(int nbEtages, IIUG iug2, ICabine cabine2,
+			IListeTrieeCirculaire<Demande> liste) {
+		this.liste = liste;
+		this.position = 0;
+		etatController = EtatController.ATTENTE;
+	}
 
 	/**
 	 * Retourne la liste des demandes indéfini
@@ -48,26 +73,10 @@ public class Controller implements IController {
 	}
 
 	/**
-	 * Constructeur de la classe contoller
-	 * Initialise
-	 * <ul>
-	 * 	<li>liste avec notre liste en paramètre</li>
-	 * 	<li>position à 0</li>
-	 * 	<li>l'état de notre controlleur à ATTENTE</li>
-	 * <ul>
-	 * @param liste
-	 */
-	public Controller(ListeTrieeCirculaireDeDemandes liste) {
-		this.liste = liste;
-		this.position = 0;
-		etatController = EtatController.ATTENTE;
-	}
-
-	/**
 	 * Retourne la liste des demandes
 	 * @return ListeTrieeCirculaireDeDemandes
 	 */
-	public ListeTrieeCirculaireDeDemandes getListe() {
+	public IListeTrieeCirculaire<Demande> getListe() {
 		return liste;
 	}
 
@@ -162,7 +171,7 @@ public class Controller implements IController {
 			break;
 		case ARRET_ETAGE:
 			// cas 14 bleu
-			if (d.etage() != this.position || d.sens().toString() != this.etatController.toString()) {
+			if (d.etage() != this.position || !d.sens().toString().equals(this.etatController.toString())) {
 				liste.inserer(d);
 				iug.eteindreBouton(demandeInitiale(d));
 				indefini.remove(demandeInitiale(d));
@@ -251,9 +260,20 @@ public class Controller implements IController {
 	 * Eteint tous les boutons
 	 * Passe l'état du controller en attente
 	 */
-	public void arretDUrgence() { // cas rouges
+	public void arretUrgence() { // cas rouges
 		System.out.println("Arrêt d'urgence");
-		iug.eteindreTousBoutons();
+		
+		for (Demande monBouton : this.liste.maListe) {
+			Demande boutonDeMaDemandeIndefinie = new Demande(monBouton.etage(), Sens.INDEFINI);
+			if (this.indefini.contains(boutonDeMaDemandeIndefinie)) {
+				iug.eteindreBouton(boutonDeMaDemandeIndefinie);
+				//System.out.println("Eteindre bouton "+boutonDeMaDemandeIndefinie.toString());
+			} else {
+				iug.eteindreBouton(monBouton);
+				//System.out.println("Eteindre bouton "+monBouton.toString());
+			}
+		}
+		
 		liste.vider();
 		majEtat(EtatController.ATTENTE);
 	}
@@ -312,7 +332,7 @@ public class Controller implements IController {
 
 		}
 		if (etatController == EtatController.ARRET_IMMINENT) {
-			cabine.arretProchainNiveau();
+			cabine.arreterProchainNiveau();
 		}
 
 		if (etatController == EtatController.MONTEE 
@@ -351,5 +371,11 @@ public class Controller implements IController {
 	public void setPosition(int position) {
 		System.out.println("(Cabine en " + position + ")");
 		this.position = position;
+	}
+
+	@Override
+	public void exit() {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -4,6 +4,7 @@ package commande;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+
 import outils.Demande;
 import outils.Sens;
 
@@ -49,7 +50,7 @@ public class ListeTrieeCirculaireDeDemandes implements IListeTrieeCirculaire<Dem
 	public void setPositionCabine(int position) {
 		this.positionCabine = position;
 	}
-
+	
 	/**
 	 * Retourne la position de la cabine
 	 * @return int, positif
@@ -141,7 +142,6 @@ public class ListeTrieeCirculaireDeDemandes implements IListeTrieeCirculaire<Dem
 			if(indice < 0){
 				indice = ref.size() - indice; 
 			}
-
 			if(maListe.contains(this.ref.get(indice))){
 				return this.ref.get(indice);
 			}

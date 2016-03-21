@@ -5,12 +5,18 @@
  */
 package commande;
 
+import java.util.Set;
+
+import outils.Demande;
+
 /**
  * Une IListeCirculaire represente une liste circulaire triee. 
  * @author Lucile Torres-Gerardin
  *
  */
 public interface IListeTrieeCirculaire<E> {		
+	Set<Demande> maListe = null;
+
 	/** 
 	 * Renvoie la taille de la liste circulaire triee.
 	 * @return la taille de la liste.
@@ -62,5 +68,5 @@ public interface IListeTrieeCirculaire<E> {
 	 * ou null si la liste est vide.
 	 * 
 	 */
-	E suivantDe( E courant);	
+	E suivantDe( E courant);
 }
